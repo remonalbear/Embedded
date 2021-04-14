@@ -1,0 +1,3 @@
+SEVENSEGMENT.d SEVENSEGMENT.o: .././SEVENSEGMENT.c .././DIO.h
+
+.././DIO.h:
