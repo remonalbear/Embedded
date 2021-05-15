@@ -1,0 +1,337 @@
+
+adc.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000001c8  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  00800060  0000021c  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .comment      00000030  00000000  00000000  0000021c  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  0000024c  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 000000f8  00000000  00000000  00000288  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   00000b9d  00000000  00000000  00000380  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 0000073b  00000000  00000000  00000f1d  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   000007c5  00000000  00000000  00001658  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000180  00000000  00000000  00001e20  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    000003e2  00000000  00000000  00001fa0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    0000099a  00000000  00000000  00002382  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 000000b8  00000000  00000000  00002d1c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   8:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  10:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  14:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  18:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  1c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  20:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  24:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  28:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  2c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  30:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  34:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  38:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  3c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  40:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  44:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  48:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  4c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  50:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+  60:	0e 94 d0 00 	call	0x1a0	; 0x1a0 <main>
+  64:	0c 94 e2 00 	jmp	0x1c4	; 0x1c4 <_exit>
+
+00000068 <__bad_interrupt>:
+  68:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+0000006c <ADC_init>:
+ *  Author: remon
+ */ 
+#include <avr/io.h>
+#include "macros.h"
+void ADC_init(unsigned char pin){
+	ADMUX =pin; //choose adc pin
+  6c:	87 b9       	out	0x07, r24	; 7
+	SET_BIT(ADMUX,REFS0); // configure VREF
+  6e:	87 b1       	in	r24, 0x07	; 7
+  70:	80 64       	ori	r24, 0x40	; 64
+  72:	87 b9       	out	0x07, r24	; 7
+	CLR_BIT(ADMUX,REFS1);
+  74:	87 b1       	in	r24, 0x07	; 7
+  76:	8f 77       	andi	r24, 0x7F	; 127
+  78:	87 b9       	out	0x07, r24	; 7
+	CLR_BIT(ADMUX,ADLAR); // configure data representation
+  7a:	87 b1       	in	r24, 0x07	; 7
+  7c:	8f 7d       	andi	r24, 0xDF	; 223
+  7e:	87 b9       	out	0x07, r24	; 7
+	SET_BIT(ADCSRA,ADEN); //enable adc 
+  80:	86 b1       	in	r24, 0x06	; 6
+  82:	80 68       	ori	r24, 0x80	; 128
+  84:	86 b9       	out	0x06, r24	; 6
+	//adjust clock
+	SET_BIT(ADCSRA,ADPS2);
+  86:	86 b1       	in	r24, 0x06	; 6
+  88:	84 60       	ori	r24, 0x04	; 4
+  8a:	86 b9       	out	0x06, r24	; 6
+	SET_BIT(ADCSRA,ADPS1);
+  8c:	86 b1       	in	r24, 0x06	; 6
+  8e:	82 60       	ori	r24, 0x02	; 2
+  90:	86 b9       	out	0x06, r24	; 6
+	CLR_BIT(ADCSRA,ADPS0);
+  92:	86 b1       	in	r24, 0x06	; 6
+  94:	8e 7f       	andi	r24, 0xFE	; 254
+  96:	86 b9       	out	0x06, r24	; 6
+  98:	08 95       	ret
+
+0000009a <ADC_read>:
+}
+unsigned short ADC_read(void){
+	unsigned short data=0;
+	
+	SET_BIT(ADCSRA,ADSC);
+  9a:	86 b1       	in	r24, 0x06	; 6
+  9c:	80 64       	ori	r24, 0x40	; 64
+  9e:	86 b9       	out	0x06, r24	; 6
+	while(!READ_BIT(ADCSRA,ADIF));
+  a0:	34 9b       	sbis	0x06, 4	; 6
+  a2:	fe cf       	rjmp	.-4      	; 0xa0 <ADC_read+0x6>
+	SET_BIT(ADCSRA,ADIF);
+  a4:	86 b1       	in	r24, 0x06	; 6
+  a6:	80 61       	ori	r24, 0x10	; 16
+  a8:	86 b9       	out	0x06, r24	; 6
+	data=ADCL;
+  aa:	24 b1       	in	r18, 0x04	; 4
+	data |= (ADCH<<8);
+  ac:	85 b1       	in	r24, 0x05	; 5
+  ae:	90 e0       	ldi	r25, 0x00	; 0
+  b0:	98 2f       	mov	r25, r24
+  b2:	88 27       	eor	r24, r24
+	return data;
+  b4:	82 2b       	or	r24, r18
+  b6:	08 95       	ret
+
+000000b8 <DIO_set_bit_dir>:
+#include <avr/io.h>
+#include "DIO.h"
+#include "macros.h"
+
+void DIO_set_bit_dir(unsigned char port,unsigned char bit , unsigned char dir){
+	switch(port){
+  b8:	82 34       	cpi	r24, 0x42	; 66
+  ba:	19 f1       	breq	.+70     	; 0x102 <DIO_set_bit_dir+0x4a>
+  bc:	18 f4       	brcc	.+6      	; 0xc4 <DIO_set_bit_dir+0xc>
+  be:	81 34       	cpi	r24, 0x41	; 65
+  c0:	39 f0       	breq	.+14     	; 0xd0 <DIO_set_bit_dir+0x18>
+  c2:	08 95       	ret
+  c4:	83 34       	cpi	r24, 0x43	; 67
+  c6:	b1 f1       	breq	.+108    	; 0x134 <DIO_set_bit_dir+0x7c>
+  c8:	84 34       	cpi	r24, 0x44	; 68
+  ca:	09 f4       	brne	.+2      	; 0xce <DIO_set_bit_dir+0x16>
+  cc:	4c c0       	rjmp	.+152    	; 0x166 <DIO_set_bit_dir+0xae>
+  ce:	08 95       	ret
+		case 'A':
+			if (dir==1){
+  d0:	41 30       	cpi	r20, 0x01	; 1
+  d2:	59 f4       	brne	.+22     	; 0xea <DIO_set_bit_dir+0x32>
+				SET_BIT(DDRA,bit);
+  d4:	2a b3       	in	r18, 0x1a	; 26
+  d6:	81 e0       	ldi	r24, 0x01	; 1
+  d8:	90 e0       	ldi	r25, 0x00	; 0
+  da:	02 c0       	rjmp	.+4      	; 0xe0 <DIO_set_bit_dir+0x28>
+  dc:	88 0f       	add	r24, r24
+  de:	99 1f       	adc	r25, r25
+  e0:	6a 95       	dec	r22
+  e2:	e2 f7       	brpl	.-8      	; 0xdc <DIO_set_bit_dir+0x24>
+  e4:	82 2b       	or	r24, r18
+  e6:	8a bb       	out	0x1a, r24	; 26
+  e8:	08 95       	ret
+			}
+			else{
+				CLR_BIT(DDRA,bit);
+  ea:	2a b3       	in	r18, 0x1a	; 26
+  ec:	81 e0       	ldi	r24, 0x01	; 1
+  ee:	90 e0       	ldi	r25, 0x00	; 0
+  f0:	02 c0       	rjmp	.+4      	; 0xf6 <DIO_set_bit_dir+0x3e>
+  f2:	88 0f       	add	r24, r24
+  f4:	99 1f       	adc	r25, r25
+  f6:	6a 95       	dec	r22
+  f8:	e2 f7       	brpl	.-8      	; 0xf2 <DIO_set_bit_dir+0x3a>
+  fa:	80 95       	com	r24
+  fc:	82 23       	and	r24, r18
+  fe:	8a bb       	out	0x1a, r24	; 26
+ 100:	08 95       	ret
+			}
+			break;
+		case 'B':
+			if (dir==1){
+ 102:	41 30       	cpi	r20, 0x01	; 1
+ 104:	59 f4       	brne	.+22     	; 0x11c <DIO_set_bit_dir+0x64>
+				SET_BIT(DDRB,bit);
+ 106:	27 b3       	in	r18, 0x17	; 23
+ 108:	81 e0       	ldi	r24, 0x01	; 1
+ 10a:	90 e0       	ldi	r25, 0x00	; 0
+ 10c:	02 c0       	rjmp	.+4      	; 0x112 <DIO_set_bit_dir+0x5a>
+ 10e:	88 0f       	add	r24, r24
+ 110:	99 1f       	adc	r25, r25
+ 112:	6a 95       	dec	r22
+ 114:	e2 f7       	brpl	.-8      	; 0x10e <DIO_set_bit_dir+0x56>
+ 116:	82 2b       	or	r24, r18
+ 118:	87 bb       	out	0x17, r24	; 23
+ 11a:	08 95       	ret
+			}
+			else{
+				CLR_BIT(DDRB,bit);
+ 11c:	27 b3       	in	r18, 0x17	; 23
+ 11e:	81 e0       	ldi	r24, 0x01	; 1
+ 120:	90 e0       	ldi	r25, 0x00	; 0
+ 122:	02 c0       	rjmp	.+4      	; 0x128 <DIO_set_bit_dir+0x70>
+ 124:	88 0f       	add	r24, r24
+ 126:	99 1f       	adc	r25, r25
+ 128:	6a 95       	dec	r22
+ 12a:	e2 f7       	brpl	.-8      	; 0x124 <DIO_set_bit_dir+0x6c>
+ 12c:	80 95       	com	r24
+ 12e:	82 23       	and	r24, r18
+ 130:	87 bb       	out	0x17, r24	; 23
+ 132:	08 95       	ret
+			}
+			break;
+		case 'C':
+			if (dir==1){
+ 134:	41 30       	cpi	r20, 0x01	; 1
+ 136:	59 f4       	brne	.+22     	; 0x14e <DIO_set_bit_dir+0x96>
+				SET_BIT(DDRC,bit);
+ 138:	24 b3       	in	r18, 0x14	; 20
+ 13a:	81 e0       	ldi	r24, 0x01	; 1
+ 13c:	90 e0       	ldi	r25, 0x00	; 0
+ 13e:	02 c0       	rjmp	.+4      	; 0x144 <DIO_set_bit_dir+0x8c>
+ 140:	88 0f       	add	r24, r24
+ 142:	99 1f       	adc	r25, r25
+ 144:	6a 95       	dec	r22
+ 146:	e2 f7       	brpl	.-8      	; 0x140 <DIO_set_bit_dir+0x88>
+ 148:	82 2b       	or	r24, r18
+ 14a:	84 bb       	out	0x14, r24	; 20
+ 14c:	08 95       	ret
+			}
+			else{
+				CLR_BIT(DDRC,bit);
+ 14e:	24 b3       	in	r18, 0x14	; 20
+ 150:	81 e0       	ldi	r24, 0x01	; 1
+ 152:	90 e0       	ldi	r25, 0x00	; 0
+ 154:	02 c0       	rjmp	.+4      	; 0x15a <DIO_set_bit_dir+0xa2>
+ 156:	88 0f       	add	r24, r24
+ 158:	99 1f       	adc	r25, r25
+ 15a:	6a 95       	dec	r22
+ 15c:	e2 f7       	brpl	.-8      	; 0x156 <DIO_set_bit_dir+0x9e>
+ 15e:	80 95       	com	r24
+ 160:	82 23       	and	r24, r18
+ 162:	84 bb       	out	0x14, r24	; 20
+ 164:	08 95       	ret
+			}
+			break;
+		case 'D':
+			if (dir==1){
+ 166:	41 30       	cpi	r20, 0x01	; 1
+ 168:	59 f4       	brne	.+22     	; 0x180 <DIO_set_bit_dir+0xc8>
+				SET_BIT(DDRD,bit);
+ 16a:	21 b3       	in	r18, 0x11	; 17
+ 16c:	81 e0       	ldi	r24, 0x01	; 1
+ 16e:	90 e0       	ldi	r25, 0x00	; 0
+ 170:	02 c0       	rjmp	.+4      	; 0x176 <DIO_set_bit_dir+0xbe>
+ 172:	88 0f       	add	r24, r24
+ 174:	99 1f       	adc	r25, r25
+ 176:	6a 95       	dec	r22
+ 178:	e2 f7       	brpl	.-8      	; 0x172 <DIO_set_bit_dir+0xba>
+ 17a:	82 2b       	or	r24, r18
+ 17c:	81 bb       	out	0x11, r24	; 17
+ 17e:	08 95       	ret
+			}
+			else{
+				CLR_BIT(DDRD,bit);
+ 180:	21 b3       	in	r18, 0x11	; 17
+ 182:	81 e0       	ldi	r24, 0x01	; 1
+ 184:	90 e0       	ldi	r25, 0x00	; 0
+ 186:	02 c0       	rjmp	.+4      	; 0x18c <DIO_set_bit_dir+0xd4>
+ 188:	88 0f       	add	r24, r24
+ 18a:	99 1f       	adc	r25, r25
+ 18c:	6a 95       	dec	r22
+ 18e:	e2 f7       	brpl	.-8      	; 0x188 <DIO_set_bit_dir+0xd0>
+ 190:	80 95       	com	r24
+ 192:	82 23       	and	r24, r18
+ 194:	81 bb       	out	0x11, r24	; 17
+ 196:	08 95       	ret
+
+00000198 <LED_init>:
+ *  Author: remon
+ */
+#include "DIO.h" 
+
+void LED_init(unsigned char port , unsigned char pin){
+	DIO_set_bit_dir(port,pin,1);
+ 198:	41 e0       	ldi	r20, 0x01	; 1
+ 19a:	0e 94 5c 00 	call	0xb8	; 0xb8 <DIO_set_bit_dir>
+ 19e:	08 95       	ret
+
+000001a0 <main>:
+#include "LED.h"
+
+int main(void)
+{
+    /* Replace with your application code */
+    ADC_init(1);
+ 1a0:	81 e0       	ldi	r24, 0x01	; 1
+ 1a2:	0e 94 36 00 	call	0x6c	; 0x6c <ADC_init>
+	int i;
+	for (i =0 ; i<8; i++){
+ 1a6:	c0 e0       	ldi	r28, 0x00	; 0
+ 1a8:	d0 e0       	ldi	r29, 0x00	; 0
+ 1aa:	05 c0       	rjmp	.+10     	; 0x1b6 <main+0x16>
+	LED_init('D',i);
+ 1ac:	6c 2f       	mov	r22, r28
+ 1ae:	84 e4       	ldi	r24, 0x44	; 68
+ 1b0:	0e 94 cc 00 	call	0x198	; 0x198 <LED_init>
+int main(void)
+{
+    /* Replace with your application code */
+    ADC_init(1);
+	int i;
+	for (i =0 ; i<8; i++){
+ 1b4:	21 96       	adiw	r28, 0x01	; 1
+ 1b6:	c8 30       	cpi	r28, 0x08	; 8
+ 1b8:	d1 05       	cpc	r29, r1
+ 1ba:	c4 f3       	brlt	.-16     	; 0x1ac <main+0xc>
+	LED_init('D',i);
+	}
+	while (1) 
+    {
+		PORTD=ADC_read();
+ 1bc:	0e 94 4d 00 	call	0x9a	; 0x9a <ADC_read>
+ 1c0:	82 bb       	out	0x12, r24	; 18
+ 1c2:	fc cf       	rjmp	.-8      	; 0x1bc <main+0x1c>
+
+000001c4 <_exit>:
+ 1c4:	f8 94       	cli
+
+000001c6 <__stop_program>:
+ 1c6:	ff cf       	rjmp	.-2      	; 0x1c6 <__stop_program>
