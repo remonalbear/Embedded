@@ -1,0 +1,42 @@
+/*
+ * timer0_ex2.c
+ *
+ * Created: 5/16/2021 3:37:17 PM
+ * Author : remon
+ */ 
+
+#include <avr/io.h>
+#define F_CPU 8000000
+#include <avr/interrupt.h>
+#include <util/delay.h>
+#include "TIMER.h"
+#include "SEVENSEGMENT.h"
+volatile unsigned char counter=0;
+volatile unsigned char temp_counter=0;
+int main(void)
+{
+    /* Replace with your application code */
+	TIMER_init0_CTC_interrupt(80);
+	SEVENSEGMENT_init('D');
+	DIO_set_bit_dir('A',0,1);
+	DIO_set_bit_dir('A',1,1);
+
+    while (1) 
+    {
+		DIO_write_bit('A',0,0);
+		SEVENSEGMENT_write('D', counter/10);
+		DIO_write_bit('A',0,1);
+		_delay_ms(2);
+		DIO_write_bit('A',1,0);
+		SEVENSEGMENT_write('D', counter%10);
+		DIO_write_bit('A',1,1);
+    }
+}
+
+ISR(TIMER0_COMP_vect){
+	temp_counter++;
+	if (temp_counter>=100){
+		temp_counter=0;
+		counter++;
+	}
+}
