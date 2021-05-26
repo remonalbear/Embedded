@@ -22,16 +22,15 @@ int main(void)
 		DIO_write_port('A',0xff);
 		_delay_ms(1000);
 		DIO_write_port('A',0x00);
-		DIO_toggle_bit('A',5);
 		_delay_ms(1000);
 		test_port=DIO_read_port('C');
 		if(test_port==2){
-			DIO_write_bit('A',3,1);
+			DIO_toggle_bit('A',3);
 			_delay_ms(1000);	
 		}
 		test_pin=DIO_read_bit('C',7);
 		if(test_pin==1){
-			DIO_write_bit('A',1,1);
+			DIO_toggle_bit('A',1);
 			_delay_ms(1000);
 		}	
 

@@ -95,16 +95,16 @@ void DIO_write_bit(unsigned char port,unsigned char bit , unsigned char value){
 void DIO_toggle_bit(unsigned char port,unsigned char bit){
 		switch(port){
 			case 'A':
-				TOG_BIT(PINA,bit);
+				TOG_BIT(PORTA,bit);
 			break;
 			case 'B':
-				TOG_BIT(PINB,bit);
+				TOG_BIT(PORTB,bit);
 			break;
 			case 'C':
-				TOG_BIT(PINC,bit);
+				TOG_BIT(PORTC,bit);
 			break;
 			case 'D':
-				TOG_BIT(PIND,bit);
+				TOG_BIT(PORTD,bit);
 			break;
 	}
 }
@@ -148,14 +148,16 @@ void DIO_write_port(unsigned char port, unsigned char value){
 	switch(port){
 		case 'A':
 			PORTA=value;
+			break;
 		case 'B':
 			PORTB=value;
+			break;
 		case 'C':
 			PORTC=value;
-		break;
+			break;
 		case 'D':
 			PORTD=value;
-		break;	
+			break;	
 	}
 }
 unsigned char DIO_read_port(unsigned char port){
@@ -174,3 +176,127 @@ unsigned char DIO_read_port(unsigned char port){
 }
 	return value;
 }
+
+void DIO_connect_pullup(unsigned char port,unsigned char bit,unsigned char connect){
+	switch(port){
+		case 'A':
+		if (connect==1){
+			SET_BIT(PORTA,bit);
+		}
+		else{
+			CLR_BIT(PORTA,bit);
+		}
+		break;
+		case 'B':
+		if (connect==1){
+			SET_BIT(PORTB,bit);
+		}
+		else{
+			CLR_BIT(PORTB,bit);
+		}
+		break;
+		case 'C':
+		if (connect==1){
+			SET_BIT(PORTC,bit);
+		}
+		else{
+			CLR_BIT(PORTC,bit);
+		}
+		break;
+		case 'D':
+		if (connect==1){
+			SET_BIT(PORTD,bit);
+		}
+		else{
+			CLR_BIT(PORTD,bit);
+		}
+		break;
+	}
+}
+
+void DIO_write_low_nibble(unsigned char port,unsigned char value){
+	value&=0x0f;
+	switch(port){
+		case'A':
+			PORTA&=0xf0;
+			PORTA|=value;	
+		break;
+		case'B':
+			PORTB &=0xf0;
+			PORTB |=value;
+		break;
+		case'C':
+			PORTC&=0xf0;
+			PORTC|=value;
+		break;
+		case'D':
+			PORTD&=0xf0;
+			PORTD|=value;
+		break;		
+	}	
+}
+
+void DIO_write_high_nibble(unsigned char port,unsigned char value){
+	value<<=4;
+	switch(port){
+		case'A':
+			PORTA&=0x0f;
+			PORTA|=value;
+		break;
+		case'B':
+			PORTB &=0x0f;
+			PORTB |=value;
+		break;
+		case'C':
+			PORTC&=0x0f;
+			PORTC|=value;
+		break;
+		case'D':
+			PORTD&=0x0f;
+			PORTD|=value;
+		break;
+	}
+}
+
+void DIO_and_port(unsigned char port , unsigned char value){
+	switch(port){
+	case 'A':
+		PORTA&=value;
+	break;
+		
+	case 'B':
+		PORTB&=value;
+	break;
+	
+	case 'C':
+		PORTC&=value;
+	break;
+	
+	case 'D':
+		PORTD&=value;
+	break;	
+		
+		
+	}
+}
+void DIO_or_port(unsigned char port , unsigned char value){
+	switch(port){
+		case 'A':
+		PORTA|=value;
+		break;
+		
+		case 'B':
+		PORTB|=value;
+		break;
+		
+		case 'C':
+		PORTC|=value;
+		break;
+		
+		case 'D':
+		PORTD|=value;
+		break;
+		
+	}
+}
+
